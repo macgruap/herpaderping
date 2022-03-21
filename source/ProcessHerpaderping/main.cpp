@@ -31,7 +31,7 @@ public:
     {
 WSTR_ORIGINAL_FILENAME L" SourceFile TargetFile [ReplacedWith] [Options...]\n"
 L"Usage:\n"
-L"  SourceFile               Source file to execute.\n"
+L"  SourceFile               Source file to execute. Parameters can be added using quotes.\n"
 L"  TargetFile               Target file to execute the source from.\n"
 L"  ReplacedWith             File to replace the target with. Optional,\n"
 L"                           default overwrites the binary with a pattern.\n"
@@ -90,7 +90,18 @@ L"                           The ADS is then mapped and executed."
 
         m_TargetBinary = Argv[1];
         m_FileName = Argv[2];
-
+        //
+        // Split second argument in binary path  + parameters (if there is a space in the quotes)
+        //
+        auto splitPos = m_TargetBinary.find(' ');
+        auto _TargetFileName = m_TargetBinary.substr(0, splitPos);
+        if (splitPos != std::string::npos){
+            m_TargetParams = m_TargetBinary.substr(splitPos + 1, m_TargetBinary.length());
+        }
+        else {
+            m_TargetParams = L"";
+        }
+        m_TargetBinary = _TargetFileName;
         for (int i = 3; i < Argc; i++)
         {
             std::wstring arg = Argv[i];
@@ -196,6 +207,13 @@ L"                           The ADS is then mapped and executed."
         return m_TargetBinary;
     }
 
+    /// <summary>Gets the target parameters string.</summary>
+    /// <returns>Target parameters string.</returns>
+    const std::wstring& TargetParams() const
+    {
+        return m_TargetParams;
+    }
+
     /// <summary>Gets the file name string.</summary>
     /// <returns>File name string.</returns>
     const std::wstring& FileName() const
@@ -241,6 +259,7 @@ L"                           The ADS is then mapped and executed."
 private:
 
     std::wstring m_TargetBinary;
+    std::wstring m_TargetParams;
     std::wstring m_FileName;
     std::optional<std::wstring> m_ReplaceWith{ std::nullopt };
     uint32_t m_LoggingMask
@@ -322,8 +341,9 @@ int wmain(
         pattern = std::span<const uint8_t>(patternBuffer);
     }
 
-    hr = Herpaderp::ExecuteProcess(params.TargetBinary(), 
-                                   params.FileName(), 
+    hr = Herpaderp::ExecuteProcess(params.TargetBinary(),
+                                   params.TargetParams(),
+                                   params.FileName(),
                                    params.ReplaceWith(), 
                                    pattern,
                                    params.HerpaderpFlags());

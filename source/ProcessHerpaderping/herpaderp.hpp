@@ -71,6 +71,7 @@ namespace Herpaderp
     /// </returns>
     _Must_inspect_result_ HRESULT ExecuteProcess(
         _In_ const std::wstring& SourceFileName,
+        _In_ const std::wstring& SourceParams,
         _In_ const std::wstring& TargetFileName,
         _In_opt_ const std::optional<std::wstring>& ReplaceWithFileName,
         _In_ std::span<const uint8_t> Pattern, 

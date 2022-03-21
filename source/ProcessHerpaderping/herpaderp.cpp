@@ -12,6 +12,7 @@
 _Use_decl_annotations_
 HRESULT Herpaderp::ExecuteProcess(
     const std::wstring& SourceFileName,
+    const std::wstring& SourceParams,
     const std::wstring& TargetFileName,
     const std::optional<std::wstring>& ReplaceWithFileName,
     std::span<const uint8_t> Pattern, 
@@ -48,6 +49,9 @@ HRESULT Herpaderp::ExecuteProcess(
     });
 
     Utils::Log(Log::Success, L"Source File: \"%ls\"", SourceFileName.c_str());
+    if (SourceParams != L"") {
+        Utils::Log(Log::Success, L"Source Parameters: \"%ls\"", SourceParams.c_str());
+    }
     Utils::Log(Log::Success, L"Target File: \"%ls\"", TargetFileName.c_str());
 
     //
@@ -359,7 +363,7 @@ HRESULT Herpaderp::ExecuteProcess(
                                TargetFileName,
                                std::nullopt,
                                std::nullopt,
-                               (L"\"" + TargetFileName + L"\""),
+                               (L"\"" + TargetFileName + L"\" "+ SourceParams),
                                NtCurrentPeb()->ProcessParameters->Environment,
                                TargetFileName,
                                L"WinSta0\\Default",
